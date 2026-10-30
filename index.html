@@ -36,7 +36,9 @@ body {
   font: 400 16px/1.65 var(--body);
   -webkit-font-smoothing: antialiased;
 }
-img { display: block; width: 100%; height: auto; }
+img, picture { display: block; width: 100%; height: auto; }
+/* Each GIF shows its still underneath while it loads; with reduced motion the still replaces it. */
+img[src$=".gif"] { background: var(--deep) center / cover no-repeat; }
 a { color: var(--sky); }
 code { font-family: var(--mono); font-size: .88em; background: var(--card); padding: 1px 6px; border-radius: 4px; }
 
@@ -62,18 +64,6 @@ p { margin: 0 0 14px; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
 .chip { font: 500 12px/1 var(--mono); padding: 8px 11px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: rgba(33,29,41,.75); }
 
-/* Draw -> cloud loop (a GIF made of two stills) */
-.loop { position: relative; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); aspect-ratio: 2 / 1; background: var(--deep); }
-.loop img { position: absolute; inset: 0; height: 100%; object-fit: cover; }
-.loop .after { animation: reveal 6s ease-in-out infinite; }
-@keyframes reveal { 0%, 38% { opacity: 0; } 50%, 88% { opacity: 1; } 100% { opacity: 0; } }
-.loop-label { position: absolute; left: 14px; bottom: 14px; font: 500 12px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 8px 10px; border-radius: 6px; background: rgba(20,18,24,.8); color: var(--sky); }
-.loop-label span { animation: lbl 6s ease-in-out infinite; }
-.loop-label .l2 { position: absolute; left: 10px; opacity: 0; animation-name: lbl2; }
-@keyframes lbl { 0%, 38% { opacity: 1; } 50%, 88% { opacity: 0; } 100% { opacity: 1; } }
-@keyframes lbl2 { 0%, 38% { opacity: 0; } 50%, 88% { opacity: 1; } 100% { opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .loop .after, .loop-label span { animation: none; } .loop .after, .loop-label .l2 { opacity: 1; } .loop-label .l1 { opacity: 0; } }
-
 .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 24px; counter-reset: s; }
 .step { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; }
 .step::before { counter-increment: s; content: "0" counter(s); display: block; font: 500 12px/1 var(--mono); color: var(--sun); margin-bottom: 10px; }
@@ -87,7 +77,7 @@ p { margin: 0 0 14px; }
 .feature li { position: relative; padding-left: 20px; margin-bottom: 8px; color: var(--muted); }
 .feature li::before { content: ""; position: absolute; left: 0; top: .62em; width: 8px; height: 8px; border-radius: 50%; background: var(--strong); }
 .feature li b, .grid-list b { color: var(--head); font-weight: 600; }
-.wide { margin-top: 22px; }
+.wide { margin: 22px 0 0; }
 .wide figcaption { font-size: 14px; color: var(--muted); margin-top: 10px; }
 
 .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
@@ -120,7 +110,10 @@ footer { padding: 28px 0 48px; color: var(--faint); font-size: 13px; text-align:
 
 <section class="hero">
   <div class="hero-img">
-    <img src="images/01_featured.jpg" alt="Volumetric clouds over the ocean, including one shaped like a heart" width="2400" height="1200">
+    <picture>
+      <source srcset="images/01_featured.jpg" media="(prefers-reduced-motion: reduce)">
+      <img src="gifs/01_featured.gif" style="background-image:url(images/01_featured.jpg)" alt="Volumetric clouds billowing over the ocean, including one shaped like a heart" width="1200" height="600">
+    </picture>
   </div>
   <div class="wrap hero-text">
     <p class="eyebrow">Blender add-on · v0.3.0</p>
@@ -140,16 +133,24 @@ footer { padding: 28px 0 48px; color: var(--faint); font-size: 13px; text-align:
     <p class="eyebrow">Draw clouds</p>
     <h2>If you can draw it, you can render it</h2>
     <p class="lead">Most cloud tools hand you someone else's shapes. Cloud Sketch lets you draw the silhouette you actually want: a heart for a wedding shot, a rabbit for a children's film, a towering cumulus to frame a mountain.</p>
-    <div class="loop" role="img" aria-label="A heart is drawn in the Blender viewport, then turns into a heart-shaped volumetric cloud">
-      <img src="images/02_draw_in_viewport.jpg" alt="" width="2400" height="1200">
-      <img class="after" src="images/03_it_becomes_a_cloud.jpg" alt="" width="2400" height="1200">
-      <div class="loop-label"><span class="l1">Draw</span><span class="l2">Release</span></div>
-    </div>
+    <figure class="wide">
+      <picture>
+        <source srcset="images/02_draw_in_viewport.jpg" media="(prefers-reduced-motion: reduce)">
+        <img src="gifs/02_draw_in_viewport.gif" style="background-image:url(images/02_draw_in_viewport.jpg)" alt="A heart is drawn in the Blender viewport, then renders as a heart-shaped volumetric cloud" width="1200" height="600">
+      </picture>
+    </figure>
     <div class="steps">
       <div class="step"><h3>Draw</h3><p>Click Draw Clouds and sketch a closed shape over your scene. Orbit or zoom between strokes and keep drawing.</p></div>
       <div class="step"><h3>Release</h3><p>The outline is inflated into 3D. Wide areas get deep and round, thin parts stay slender, the way real clouds read.</p></div>
       <div class="step"><h3>Tweak</h3><p>Puffiness, detail, wisps, softness and density update live in the viewport, and every one can be keyframed.</p></div>
     </div>
+    <figure class="wide">
+      <picture>
+        <source srcset="images/03_it_becomes_a_cloud.jpg" media="(prefers-reduced-motion: reduce)">
+        <img src="gifs/03_live_in_viewport.gif" style="background-image:url(images/03_it_becomes_a_cloud.jpg)" alt="The heart cloud in the Blender viewport while Puffiness, Detail, Softness and Grow change" loading="lazy" width="1200" height="600">
+      </picture>
+      <figcaption>Puffiness, Detail, Softness and Grow, changed live in the Rendered viewport.</figcaption>
+    </figure>
   </div>
 </section>
 
@@ -165,7 +166,10 @@ footer { padding: 28px 0 48px; color: var(--faint); font-size: 13px; text-align:
         <li>Works for logos and lettering, characters, creatures and props.</li>
       </ul>
     </div>
-    <img src="images/06_model_to_cloud.jpg" alt="A dragon model next to a cloud in the same dragon shape" loading="lazy" width="2400" height="1200">
+    <picture>
+      <source srcset="images/06_model_to_cloud.jpg" media="(prefers-reduced-motion: reduce)">
+      <img src="gifs/06_model_to_cloud.gif" style="background-image:url(images/06_model_to_cloud.jpg)" alt="A dragon model dissolving into a cloud of the same dragon shape" loading="lazy" width="1200" height="600">
+    </picture>
   </div>
 </section>
 
@@ -174,8 +178,11 @@ footer { padding: 28px 0 48px; color: var(--faint); font-size: 13px; text-align:
     <p class="eyebrow">Sky Builder · new in 0.3</p>
     <h2>Fill the whole sky in one click</h2>
     <p class="lead">Pick a weather, set Coverage and click Build Sky. Clouds, sun, atmosphere and haze are set up around your active camera.</p>
-    <figure class="wide" style="margin-inline:0">
-      <img src="images/05_sky_builder.jpg" alt="Nine skies made with Sky Builder, one for each weather preset" loading="lazy" width="2400" height="1200">
+    <figure class="wide">
+      <picture>
+        <source srcset="images/05_sky_builder.jpg" media="(prefers-reduced-motion: reduce)">
+        <img src="gifs/05_sky_builder.gif" style="background-image:url(images/05_sky_builder.jpg)" alt="One Build Sky click for each of the nine weather presets" loading="lazy" width="1200" height="600">
+      </picture>
     </figure>
     <div class="tags">
       <span class="tag"><b>Fair Weather</b></span><span class="tag"><b>Cumulus Field</b></span><span class="tag"><b>Towering Afternoon</b></span>
@@ -197,7 +204,10 @@ footer { padding: 28px 0 48px; color: var(--faint); font-size: 13px; text-align:
         <span class="tag"><b>Plumes</b> 6</span><span class="tag"><b>Trails</b> 6</span>
       </div>
     </div>
-    <img src="images/04_cloud_library.jpg" alt="Library clouds: cumulus, towering, storm, clusters, scattered, plumes, wisps and contrails" loading="lazy" width="2400" height="1200">
+    <picture>
+      <source srcset="images/04_cloud_library.jpg" media="(prefers-reduced-motion: reduce)">
+      <img src="gifs/04_cloud_library.gif" style="background-image:url(images/04_cloud_library.jpg)" alt="The cloud library stepping through its eight categories, from cumulus to contrails" loading="lazy" width="1200" height="600">
+    </picture>
   </div>
 </section>
 
@@ -208,7 +218,10 @@ footer { padding: 28px 0 48px; color: var(--faint); font-size: 13px; text-align:
       <h2>Your silhouette, kept</h2>
       <p class="muted">Concave, spiky or round, the cloud keeps the outline you drew. Shapes are inflated with a Poisson solve instead of a flat extrusion, so a circle becomes a sphere and a long limb becomes a tube.</p>
     </div>
-    <img src="images/07_any_shape.jpg" alt="Clouds shaped like a cumulus, a heart, a star and a moon" loading="lazy" width="2400" height="1200">
+    <picture>
+      <source srcset="images/07_any_shape.jpg" media="(prefers-reduced-motion: reduce)">
+      <img src="gifs/07_any_shape.gif" style="background-image:url(images/07_any_shape.jpg)" alt="Clouds shaped like a cumulus, a heart, a star and a moon forming one after another" loading="lazy" width="1200" height="600">
+    </picture>
   </div>
 </section>
 
@@ -224,7 +237,10 @@ footer { padding: 28px 0 48px; color: var(--faint); font-size: 13px; text-align:
         <li><b>Motion:</b> Grow and Evolve, keyframable like everything else</li>
       </ul>
     </div>
-    <img src="images/08_live_controls.jpg" alt="The same cloud with different Puffiness, Detail and Softness values" loading="lazy" width="2400" height="1200">
+    <picture>
+      <source srcset="images/08_live_controls.jpg" media="(prefers-reduced-motion: reduce)">
+      <img src="gifs/08_live_controls.gif" style="background-image:url(images/08_live_controls.jpg)" alt="One cloud as Puffiness, Detail and Wisps sweep through their range" loading="lazy" width="1200" height="600">
+    </picture>
   </div>
 </section>
 
@@ -240,7 +256,10 @@ footer { padding: 28px 0 48px; color: var(--faint); font-size: 13px; text-align:
         <li><b>Animate Day</b> moves the sun from sunrise to sunset over the frame range.</li>
       </ul>
     </div>
-    <img src="images/09_animate_formation.jpg" alt="A cloud forming in four stages" loading="lazy" width="2400" height="1200">
+    <picture>
+      <source srcset="images/09_animate_formation.jpg" media="(prefers-reduced-motion: reduce)">
+      <img src="gifs/09_animate_formation.gif" style="background-image:url(images/09_animate_formation.jpg)" alt="A cloud growing out of thin air" loading="lazy" width="1200" height="600">
+    </picture>
   </div>
 </section>
 
@@ -257,7 +276,10 @@ footer { padding: 28px 0 48px; color: var(--faint); font-size: 13px; text-align:
       </ul>
       <p class="muted" style="margin-top:12px">Everything updates live in the Rendered viewport. Your own HDRI and lights work too.</p>
     </div>
-    <img src="images/10_time_of_day.jpg" alt="The same cloud at morning, noon and sunset" loading="lazy" width="2400" height="1200">
+    <picture>
+      <source srcset="images/10_time_of_day.jpg" media="(prefers-reduced-motion: reduce)">
+      <img src="gifs/10_time_of_day.gif" style="background-image:url(images/10_time_of_day.jpg)" alt="The sun moving through the day, from morning to sunset, with the sky and clouds following" loading="lazy" width="1200" height="600">
+    </picture>
   </div>
 </section>
 
